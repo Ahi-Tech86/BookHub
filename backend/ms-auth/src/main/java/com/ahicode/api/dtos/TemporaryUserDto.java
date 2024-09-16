@@ -1,6 +1,5 @@
 package com.ahicode.api.dtos;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,8 +9,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AccountActivationRequestDto {
+public class TemporaryUserDto {
     private String email;
-    @JsonProperty("code")
+    private String firstname;
+    private String lastname;
+    private String password;
     private String activationCode;
 }

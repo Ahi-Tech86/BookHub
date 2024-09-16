@@ -1,37 +1,6 @@
 version: '3.8'
 
 services:
-  auth_mongo_db:
-    image: mongo:latest
-    container_name: mongo
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USER}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
-      MONGODB_USER: ${MONGODB_USER}
-      MONGODB_PASSWORD: ${MONGODB_PASSWORD}
-      MONGO_INITDB_DATABASE: requests_db
-    ports:
-      - "27017:27017"
-    volumes:
-      - auth_mongo_data:/data/db
-    networks:
-      - backend
-
-  mongo-express:
-    image: mongo-express:latest
-    container_name: mongo-express
-    environment:
-      ME_CONFIG_MONGODB_SERVER: mongo
-      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGODB_USER}
-      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGODB_PASSWORD}
-      ME_CONFIG_MONGODB_PORT: 27017
-    ports:
-      - "9999:8081"
-    networks:
-      - backend
-    depends_on:
-      - auth_mongo_db
-
   auth_db:
     image: postgres:15
     container_name: auth_db
@@ -46,9 +15,19 @@ services:
     networks:
       - backend
 
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - backend
+
 volumes:
-  auth_mongo_data:
   auth_db_data:
+  redis_data:
 
 networks:
   backend:

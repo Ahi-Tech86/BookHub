@@ -6,15 +6,12 @@ spring:
   application:
     name: AUTH-SERVICE
 
-  data:
-    mongodb:
-      port: 27017
-      host: localhost
-      #uri: ${MONGODB_URI}
-      username: ${MONGODB_USER}
-      password: ${MONGODB_PASSWORD}
-      authentication-database: admin
-      database: requests_db
+  cache:
+    type: redis
+
+  redis:
+    port: 6379
+    host: localhost
 
   mail:
     port: 465

@@ -1,23 +1,20 @@
 package com.ahicode.api.services;
 
-import com.ahicode.api.dtos.AccountActivationRequestDto;
-import com.ahicode.api.dtos.CredentialRequestDto;
-import com.ahicode.api.dtos.RegistrationRequestDto;
-import com.ahicode.api.dtos.UserDto;
+import com.ahicode.api.dtos.*;
+import com.ahicode.api.factories.TemporaryUserDtoFactory;
 import com.ahicode.api.services.interfaces.AuthService;
 import com.ahicode.exceptions.AppException;
-import com.ahicode.storage.entities.RegistrationRequest;
 import com.ahicode.storage.entities.UserEntity;
-import com.ahicode.storage.repositories.RegistrationRequestRepository;
 import com.ahicode.storage.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.Optional;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -26,7 +23,9 @@ public class AuthServiceImpl implements AuthService {
 
     private final EmailService emailService;
     private final UserRepository userRepository;
-    private final RegistrationRequestRepository requestRepository;
+    private final TemporaryUserDtoFactory temporaryUserDtoFactory;
+
+    private final RedisTemplate<String, TemporaryUserDto> redisTemplate;
 
     @Override
     public String registerUser(RegistrationRequestDto request) {
@@ -38,23 +37,16 @@ public class AuthServiceImpl implements AuthService {
         // generating activation code
         String activationCode = generateActivationCode();
 
-        // creating mongo document
-        RegistrationRequest registrationRequest = RegistrationRequest.builder()
-                .email(email)
-                .dto(request)
-                .activationCode(activationCode)
-                .createAt(Instant.now())
-                .build();
-
-        // temporary saving information
-        requestRepository.save(registrationRequest);
+        // saving temporary information about user
+        TemporaryUserDto temporaryUserDto = temporaryUserDtoFactory.makeTemporaryUserDto(request, activationCode);
+        redisTemplate.opsForValue().set(email, temporaryUserDto, 20, TimeUnit.MINUTES);
         log.info("User information with email {} is temporarily saved", email);
 
         // trying to send message on email
         try {
             emailService.sendActivationEmail(email, activationCode);
         } catch (RuntimeException exception) {
-            exception.printStackTrace();
+            log.error("Attempt to send message was unsuccessful", exception);
             throw new AppException("There was an error sending the message", HttpStatus.BAD_REQUEST);
         }
 
