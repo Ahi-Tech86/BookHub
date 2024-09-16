@@ -1,4 +1,6 @@
 rootProject.name = 'backend'
+
 include 'ms-eureka'
 include 'ms-gateway'
+include 'lib'
 
