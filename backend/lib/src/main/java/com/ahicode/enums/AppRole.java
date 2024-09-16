@@ -1,7 +1,14 @@
 package com.ahicode.enums;
 
-public enum AppRole {
+import org.springframework.security.core.GrantedAuthority;
+
+public enum AppRole implements GrantedAuthority {
     ADMIN_ROLE,
-    WORKER_ROLE,
-    EMPLOYER_ROLE;
+    USER_ROLE;
+
+
+    @Override
+    public String getAuthority() {
+        return name();
+    }
 }

@@ -26,6 +26,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             HttpServletRequest request, HttpServletResponse response, FilterChain filterChain
     ) throws ServletException, IOException {
 
+        String path = request.getRequestURI();
+        if (path.equals("/auth/register") || path.equals("/auth/login") || path.equals("/auth/activateAccount")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         // extracting accessToken from headers or cookies
         String accessToken = extractAccessToken(request);
 
