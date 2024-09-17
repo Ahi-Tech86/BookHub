@@ -1,0 +1,63 @@
+server:
+  port: 8081
+
+
+spring:
+  application:
+    name: AUTH-SERVICE
+
+  cache:
+    type: redis
+
+  redis:
+    port: 6379
+    host: localhost
+
+  mail:
+    port: 465
+    host: smtp.yandex.ru
+    protocol: smtps
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    debug: true
+    #properties:
+      #mail.smtp.auth: true
+      #mail.smtp.starttls.enable: true
+      #mail.smtp.ssl.trust: smtp.yandex.ru
+
+  datasource:
+    username: ${DB_USERNAME_AUTH}
+    password: ${DB_PASSWORD_AUTH}
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/auth_db
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+
+application:
+  security:
+    jwt:
+      access-token:
+        secret-key: ${JWT_ACCESS_SECRET_KEY}
+        expiration: 86400000 # 1 day
+      refresh-token:
+        secret-key: ${JWT_REFRESH_SECRET_KEY}
+        expiration: 604800000 # 7 days
+    encryption:
+      secret-key: ${ENCRYPTION_SECRET_KEY}
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true

@@ -1,0 +1,56 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.1.4'
+}
+
+ext {
+    jjwtVersion ='0.11.5'
+    junitVersion = '5.7.0'
+    mockitoVersion = '3.6.28'
+}
+
+// Spring Boot dependencies
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-mail:3.1.5'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+}
+
+// Spring Cloud dependencies
+dependencies {
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+}
+
+// common library dependency
+dependencies {
+    implementation project(':lib')
+}
+
+// Databases dependencies
+dependencies {
+    implementation 'redis.clients:jedis'
+    runtimeOnly 'org.postgresql:postgresql'
+}
+
+// Other dependencies
+dependencies {
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    implementation 'io.github.cdimascio:java-dotenv:5.2.2'
+    implementation "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
+    implementation "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
+    implementation "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
+}
+
+// Testing dependencies
+dependencies {
+    testImplementation "org.mockito:mockito-core:${mockitoVersion}"
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+}
