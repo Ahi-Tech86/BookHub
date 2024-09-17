@@ -1,5 +1,6 @@
 package com.ahicode.controllers;
 
+import com.ahicode.api.dtos.AccountActivationRequestDto;
 import com.ahicode.api.dtos.RegistrationRequestDto;
 import com.ahicode.api.services.AuthServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class AuthController {
     }
 
     @PostMapping("/activateAccount")
-    public String activateAccount() {
-        return "";
+    public String activateAccount(@RequestBody AccountActivationRequestDto requestDto) {
+        return authService.activateAccount(requestDto);
     }
 }
