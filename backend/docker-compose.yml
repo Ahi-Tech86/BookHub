@@ -15,6 +15,20 @@ services:
     networks:
       - backend
 
+  library_db:
+    image: postgres:15
+    container_name: library_db
+    environment:
+      POSTGRES_DB: library_db
+      POSTGRES_USER: ${DB_USERNAME_LIBRARY}
+      POSTGRES_PASSWORD: ${DB_PASSWORD_LIBRARY}
+    ports:
+      - "5433:5432"
+    volumes:
+      - library_db_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
   redis:
     image: redis:latest
     container_name: redis
@@ -28,6 +42,7 @@ services:
 volumes:
   auth_db_data:
   redis_data:
+  library_db_data:
 
 networks:
   backend:

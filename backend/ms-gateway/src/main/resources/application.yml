@@ -13,6 +13,11 @@ spring:
           predicates:
             - Path=/auth/**
 
+        - id: library-service
+          uri: lb://LIBRARY-SERVICE
+          predicates:
+            - Path=/library/**
+
 eureka:
   instance:
     hostname: localhost

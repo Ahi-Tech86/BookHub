@@ -5,9 +5,9 @@ import com.ahicode.services.JwtServiceImpl;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class UserAuthenticationProvider {
 
