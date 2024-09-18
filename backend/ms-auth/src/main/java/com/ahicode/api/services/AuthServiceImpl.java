@@ -6,6 +6,7 @@ import com.ahicode.api.factories.UserDtoFactory;
 import com.ahicode.api.factories.UserEntityFactory;
 import com.ahicode.api.services.interfaces.AuthService;
 import com.ahicode.exceptions.AppException;
+import com.ahicode.services.JwtServiceImpl;
 import com.ahicode.storage.entities.UserEntity;
 import com.ahicode.storage.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -27,8 +30,9 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
+    private final JwtServiceImpl jwtService;
     private final EmailService emailService;
-    private final UserRepository userRepository;
+    private final UserRepository repository;
     private final TokenServiceImpl tokenService;
     private final UserDtoFactory userDtoFactory;
     private final PasswordEncoder passwordEncoder;
@@ -89,7 +93,7 @@ public class AuthServiceImpl implements AuthService {
         UserEntity user = userEntityFactory.makeUserEntity(temporaryUserDto);
         user.setPassword(passwordEncoder.encode(temporaryUserDto.getPassword()));
 
-        UserEntity savedUser = userRepository.saveAndFlush(user);
+        UserEntity savedUser = repository.saveAndFlush(user);
         log.info("User with email {} was successfully saved", email);
 
         tokenService.createAndSaveToken(user);
@@ -98,8 +102,28 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public UserDto login(CredentialRequestDto request) {
-        return null;
+    public List<Object> login(CredentialRequestDto requestDto) {
+        // creating list for response
+        List<Object> response = new ArrayList<>();
+        String email = requestDto.getEmail();
+
+        // getting user from db if user is exists
+        UserEntity user = isUserExistsByEmail(email);
+
+        // matches password from request and password from db
+        if (passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+            UserDto userDto = userDtoFactory.makeUserDto(user);
+            String accessToken = jwtService.generateAccessToken(email, user.getRole());
+            String refreshToken = tokenService.getTokenByUserEmail(email);
+            response.add(userDto);
+            response.add(accessToken);
+            response.add(refreshToken);
+            log.info("Successful login to {} account", email);
+            return response;
+        } else {
+            log.error("Attempt to log with incorrect password to {} account", email);
+            throw new AppException("Incorrect password for user with email {" + email + "}", HttpStatus.UNAUTHORIZED);
+        }
     }
 
     private String generateActivationCode() {
@@ -125,11 +149,23 @@ public class AuthServiceImpl implements AuthService {
 
     private void isEmailUniqueness(String email) {
 
-        Optional<UserEntity> optionalUser = userRepository.findByEmail(email);
+        Optional<UserEntity> optionalUser = repository.findByEmail(email);
 
         if (optionalUser.isPresent()) {
             log.error("Attempt to register with an existing email: {}", email);
             throw new AppException("User with email {" + email + "} is already exists", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private UserEntity isUserExistsByEmail(String email) {
+
+        Optional<UserEntity> optionalUser = repository.findByEmail(email);
+
+        if (optionalUser.isPresent()) {
+            return optionalUser.get();
+        } else {
+            log.error("Attempt to log into an account with non-existent email {}", email);
+            throw new AppException("User with email {" + email + "} doesn't exists", HttpStatus.NOT_FOUND);
         }
     }
 }

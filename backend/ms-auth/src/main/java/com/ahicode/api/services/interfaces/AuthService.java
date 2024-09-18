@@ -5,11 +5,13 @@ import com.ahicode.api.dtos.CredentialRequestDto;
 import com.ahicode.api.dtos.RegistrationRequestDto;
 import com.ahicode.api.dtos.UserDto;
 
+import java.util.List;
+
 public interface AuthService {
 
     String registerUser(RegistrationRequestDto request);
 
     UserDto activateAccount(AccountActivationRequestDto request);
 
-    UserDto login(CredentialRequestDto request);
+    List<Object> login(CredentialRequestDto request);
 }
