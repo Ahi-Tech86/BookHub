@@ -87,11 +87,6 @@ public class JwtServiceImpl implements JwtService {
         return authValidateToken(token, accessSignKey);
     }
 
-    @Override
-    public Authentication authenticatedRefreshValidation(String token) {
-        return authValidateToken(token, refreshSignKey);
-    }
-
     private Key getAccessSignKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKeyToAccessToken);
         return Keys.hmacShaKeyFor(keyBytes);

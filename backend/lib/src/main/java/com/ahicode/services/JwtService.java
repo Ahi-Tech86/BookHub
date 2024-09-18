@@ -12,5 +12,4 @@ public interface JwtService {
     boolean isRefreshTokenExpired(String token);
     String generateAccessToken(String email, AppRole role);
     Authentication authenticatedAccessValidation(String token);
-    Authentication authenticatedRefreshValidation(String token);
 }
