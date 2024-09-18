@@ -33,6 +33,7 @@ dependencies {
 dependencies {
     implementation 'redis.clients:jedis'
     runtimeOnly 'org.postgresql:postgresql'
+    implementation 'org.flywaydb:flyway-core'
 }
 
 // Other dependencies

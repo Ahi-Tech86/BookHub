@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Collections;
@@ -18,6 +19,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+@Service
 public class JwtServiceImpl implements JwtService {
 
     @Value("${application.security.jwt.access-token.secret-key}")
@@ -26,6 +28,8 @@ public class JwtServiceImpl implements JwtService {
     private Long accessTokenExpirationTime;
     @Value("${application.security.jwt.refresh-token.secret-key}")
     private String secretKeyToRefreshToken;
+    @Value("${application.security.jwt.refresh-token.expiration}")
+    private Long refreshTokenExpirationTime;
 
     private Key accessSignKey;
     private Key refreshSignKey;
@@ -69,17 +73,18 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public String generateAccessToken(String email, AppRole role) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("role", role);
+    public Date extractRefreshTokenExpirationTime(String token) {
+        return extractTokenExpiration(token, refreshSignKey);
+    }
 
-        return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(email)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpirationTime))
-                .signWith(accessSignKey)
-                .compact();
+    @Override
+    public String generateAccessToken(String email, AppRole role) {
+        return generateToken(email, role, accessSignKey, accessTokenExpirationTime);
+    }
+
+    @Override
+    public String generateRefreshToken(String email, AppRole role) {
+        return generateToken(email, role, refreshSignKey, refreshTokenExpirationTime);
     }
 
     @Override
@@ -126,6 +131,12 @@ public class JwtServiceImpl implements JwtService {
         return expirationDate.before(new Date());
     }
 
+    private Date extractTokenExpiration(String token, Key signKey) {
+        Claims claims = extractAllClaims(token, signKey);
+
+        return claims.getExpiration();
+    }
+
     private Authentication authValidateToken(String token, Key signKey) {
 
         Claims claims = extractAllClaims(token, signKey);
@@ -133,5 +144,18 @@ public class JwtServiceImpl implements JwtService {
         String email = claims.getSubject();
 
         return new UsernamePasswordAuthenticationToken(email, null, Collections.emptyList());
+    }
+
+    private String generateToken(String email, AppRole role, Key signKey, Long expirationTime) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", role);
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(email)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
+                .signWith(signKey)
+                .compact();
     }
 }

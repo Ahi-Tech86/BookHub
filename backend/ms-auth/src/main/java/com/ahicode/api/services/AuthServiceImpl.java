@@ -2,6 +2,7 @@ package com.ahicode.api.services;
 
 import com.ahicode.api.dtos.*;
 import com.ahicode.api.factories.TemporaryUserDtoFactory;
+import com.ahicode.api.factories.UserDtoFactory;
 import com.ahicode.api.factories.UserEntityFactory;
 import com.ahicode.api.services.interfaces.AuthService;
 import com.ahicode.exceptions.AppException;
@@ -13,6 +14,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.Random;
@@ -27,6 +29,8 @@ public class AuthServiceImpl implements AuthService {
 
     private final EmailService emailService;
     private final UserRepository userRepository;
+    private final TokenServiceImpl tokenService;
+    private final UserDtoFactory userDtoFactory;
     private final PasswordEncoder passwordEncoder;
     private final UserEntityFactory userEntityFactory;
     private final TemporaryUserDtoFactory temporaryUserDtoFactory;
@@ -67,7 +71,8 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public String activateAccount(AccountActivationRequestDto requestDto) {
+    @Transactional
+    public UserDto activateAccount(AccountActivationRequestDto requestDto) {
         String email = requestDto.getEmail();
         String activationCode = requestDto.getActivationCode();
 
@@ -87,8 +92,9 @@ public class AuthServiceImpl implements AuthService {
         UserEntity savedUser = userRepository.saveAndFlush(user);
         log.info("User with email {} was successfully saved", email);
 
+        tokenService.createAndSaveToken(user);
 
-        return temporaryUserDto.getActivationCode();
+        return userDtoFactory.makeUserDto(savedUser);
     }
 
     @Override

@@ -9,7 +9,7 @@ public interface AuthService {
 
     String registerUser(RegistrationRequestDto request);
 
-    String activateAccount(AccountActivationRequestDto request);
+    UserDto activateAccount(AccountActivationRequestDto request);
 
     UserDto login(CredentialRequestDto request);
 }
