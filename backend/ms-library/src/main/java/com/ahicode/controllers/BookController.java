@@ -1,6 +1,6 @@
 package com.ahicode.controllers;
 
-import com.ahicode.api.dtos.CreateAuthorPageRequestDto;
+import com.ahicode.api.dtos.AuthorCreationRequestDto;
 import com.ahicode.api.services.AuthorServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +18,7 @@ public class BookController {
     }
 
     @PostMapping("/author/createPage")
-    public String createAccount(@RequestBody CreateAuthorPageRequestDto requestDto) {
+    public String createAccount(@RequestBody AuthorCreationRequestDto requestDto) {
         return authorService.createAuthorPage(requestDto);
     }
 }

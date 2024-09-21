@@ -1,6 +1,6 @@
 package com.ahicode.api.services;
 
-import com.ahicode.api.dtos.CreateAuthorPageRequestDto;
+import com.ahicode.api.dtos.AuthorCreationRequestDto;
 import com.ahicode.exceptions.AppException;
 import com.ahicode.storage.entities.AuthorEntity;
 import com.ahicode.storage.repositories.AuthorRepository;
@@ -8,7 +8,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -25,7 +24,7 @@ public class AuthorServiceImpl implements AuthorService {
     private final AuthorRepository authorRepository;
 
     @Override
-    public String createAuthorPage(CreateAuthorPageRequestDto requestDto) {
+    public String createAuthorPage(AuthorCreationRequestDto requestDto) {
         // making authorKey and checking it on uniqueness
         String authorKey = makeAuthorKey(requestDto);
         isAuthorKeyUniqueness(authorKey);
@@ -52,7 +51,7 @@ public class AuthorServiceImpl implements AuthorService {
         }
     }
 
-    private String makeAuthorKey(CreateAuthorPageRequestDto requestDto) {
+    private String makeAuthorKey(AuthorCreationRequestDto requestDto) {
         String firstname = requestDto.getFirstname();
         String lastname = requestDto.getLastname();
         String birthdate = requestDto.getBirthdate();

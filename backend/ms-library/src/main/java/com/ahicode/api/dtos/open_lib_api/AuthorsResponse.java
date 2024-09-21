@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AuthorResponse {
+public class AuthorsResponse {
     private int numFound;
     private List<AuthorDto> docs;
 }

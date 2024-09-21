@@ -8,8 +8,8 @@ public class AuthorEntityFactory {
 
     public AuthorEntity makeAuthorEntity(String firstname, String lastname, String birthdate, String deathdate) {
         return AuthorEntity.builder()
-                .firstname(firstname.toLowerCase())
-                .lastname(lastname.toLowerCase())
+                .firstname(firstname)
+                .lastname(lastname)
                 .birthdate(birthdate)
                 .deathdate(deathdate)
                 .key(firstname + "-" + lastname + birthdate)

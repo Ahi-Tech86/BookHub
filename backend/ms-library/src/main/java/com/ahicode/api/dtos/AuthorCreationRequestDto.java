@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateAuthorPageRequestDto {
+public class AuthorCreationRequestDto {
     private String firstname;
     private String lastname;
     private String birthdate;
