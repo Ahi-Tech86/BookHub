@@ -28,6 +28,7 @@ public class AuthorEntity {
     @Column(name = "death_date")
     private String deathdate;
 
+    @Column(unique = true)
     private String key;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
