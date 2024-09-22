@@ -1,9 +1,16 @@
 package com.ahicode.controllers;
 
 import com.ahicode.api.dtos.AuthorCreationRequestDto;
+import com.ahicode.api.dtos.AuthorDto;
 import com.ahicode.api.services.AuthorServiceImpl;
+import com.ahicode.storage.entities.AuthorEntity;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,5 +27,19 @@ public class BookController {
     @PostMapping("/author/createPage")
     public String createAccount(@RequestBody AuthorCreationRequestDto requestDto) {
         return authorService.createAuthorPage(requestDto);
+    }
+
+    @GetMapping("/authors")
+    public Page<AuthorDto> getAllAuthors(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return authorService.getPageAuthors(pageable);
+    }
+
+    @GetMapping("/author/{id}")
+    public AuthorDto getAuthor(@PathVariable(name = "id") Long id) {
+        return authorService.getAuthor(id);
     }
 }

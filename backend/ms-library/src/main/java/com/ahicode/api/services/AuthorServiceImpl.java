@@ -1,6 +1,8 @@
 package com.ahicode.api.services;
 
 import com.ahicode.api.dtos.AuthorCreationRequestDto;
+import com.ahicode.api.dtos.AuthorDto;
+import com.ahicode.api.factories.AuthorDtoFactory;
 import com.ahicode.exceptions.AppException;
 import com.ahicode.storage.entities.AuthorEntity;
 import com.ahicode.storage.repositories.AuthorRepository;
@@ -9,10 +11,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -21,6 +28,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     private final RabbitTemplate template;
     private final ObjectMapper objectMapper;
+    private final AuthorDtoFactory dtoFactory;
     private final AuthorRepository authorRepository;
 
     @Override
@@ -40,6 +48,26 @@ public class AuthorServiceImpl implements AuthorService {
         }
 
         return "Your request has been accepted and will be processed after some time";
+    }
+
+    @Override
+    public Page<AuthorDto> getPageAuthors(Pageable pageable) {
+        log.info("Attempt to get all authors from db");
+
+        return authorRepository.findAll(pageable)
+                .map(dtoFactory::makeAuthorDto);
+    }
+
+    @Override
+    public AuthorDto getAuthor(Long id) {
+        Optional<AuthorEntity> optionalAuthor = authorRepository.findById(id);
+
+        if (optionalAuthor.isEmpty()) {
+            log.error("Attempt to get non-existent author");
+            throw new AppException("Author with id {" + id + "} doesn't exists", HttpStatus.NOT_FOUND);
+        }
+
+        return dtoFactory.makeAuthorDto(optionalAuthor.get());
     }
 
     private void isAuthorKeyUniqueness(String authorKey) {

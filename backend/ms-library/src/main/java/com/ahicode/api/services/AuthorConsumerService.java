@@ -92,37 +92,6 @@ public class AuthorConsumerService {
         return "https://openlibrary.org/search/authors.json?q=" + encodedAuthorName;
     }
 
-    private String extractYear(String authorDate) {
-
-        if (authorDate == null || authorDate.trim().isEmpty()) {
-            log.error("Death date is null or empty");
-            return "-";
-        }
-
-        String[] formats = {
-                "d MMMM yyyy",
-                "yyyy",
-                "MMMM yyyy",
-                "d MMM yyyy"
-        };
-
-        for (String format : formats) {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
-
-            try {
-                simpleDateFormat.setLenient(false);
-                Date date = simpleDateFormat.parse(authorDate);
-                SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
-                return yearFormat.format(date);
-            } catch (ParseException exception) {
-                log.error("An error occurred while parsing date {}", authorDate);
-                throw new AppException("An internal server error occurred, please try again",HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        }
-        log.error("Failed to parse death: {}", authorDate);
-        throw new AppException("Invalid date format for deathDate", HttpStatus.BAD_REQUEST);
-    }
-
     private String extractDate(String authorDate) {
         String regex = "\\d{4}";
         Pattern pattern = Pattern.compile(regex);
