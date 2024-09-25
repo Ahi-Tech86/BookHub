@@ -1,11 +1,9 @@
-package com.ahicode.api.services;
+package com.ahicode.api.services.interfaces;
 
 import com.ahicode.api.dtos.AuthorCreationRequestDto;
 import com.ahicode.api.dtos.AuthorDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
 
 public interface AuthorService {
     String createAuthorPage(AuthorCreationRequestDto requestDto);

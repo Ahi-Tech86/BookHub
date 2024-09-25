@@ -31,5 +31,5 @@ public class BookEntity {
     private String description;
 
     @Column(name = "publication_date")
-    private LocalDate publicationDate;
+    private String publicationDate;
 }

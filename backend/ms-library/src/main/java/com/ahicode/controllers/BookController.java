@@ -1,45 +1,20 @@
 package com.ahicode.controllers;
 
-import com.ahicode.api.dtos.AuthorCreationRequestDto;
-import com.ahicode.api.dtos.AuthorDto;
-import com.ahicode.api.services.AuthorServiceImpl;
-import com.ahicode.storage.entities.AuthorEntity;
+import com.ahicode.api.dtos.BookCreationRequestDto;
+import com.ahicode.api.dtos.BookDto;
+import com.ahicode.api.services.BookServiceImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/library")
+@RequiredArgsConstructor
 public class BookController {
 
-    private final AuthorServiceImpl authorService;
+    private final BookServiceImpl service;
 
-    @GetMapping("/test")
-    public String test() {
-        return "Please be quite, this is a library";
-    }
-
-    @PostMapping("/author/createPage")
-    public String createAccount(@RequestBody AuthorCreationRequestDto requestDto) {
-        return authorService.createAuthorPage(requestDto);
-    }
-
-    @GetMapping("/authors")
-    public Page<AuthorDto> getAllAuthors(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        return authorService.getPageAuthors(pageable);
-    }
-
-    @GetMapping("/author/{id}")
-    public AuthorDto getAuthor(@PathVariable(name = "id") Long id) {
-        return authorService.getAuthor(id);
+    @PostMapping("/author/{authorId}/createBook")
+    public BookDto createBook(@PathVariable Long authorId, @RequestBody BookCreationRequestDto requestDto) {
+        return service.createBook(authorId, requestDto);
     }
 }

@@ -3,6 +3,7 @@ package com.ahicode.api.services;
 import com.ahicode.api.dtos.AuthorCreationRequestDto;
 import com.ahicode.api.dtos.AuthorDto;
 import com.ahicode.api.factories.AuthorDtoFactory;
+import com.ahicode.api.services.interfaces.AuthorService;
 import com.ahicode.exceptions.AppException;
 import com.ahicode.storage.entities.AuthorEntity;
 import com.ahicode.storage.repositories.AuthorRepository;
@@ -16,10 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
