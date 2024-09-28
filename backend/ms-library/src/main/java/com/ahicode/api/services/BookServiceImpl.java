@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -75,12 +76,24 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<BookDto> getAllAuthorsBooks(Long authorId) {
-        return List.of();
+        log.info("Attempt to get all book of author");
+
+        List<BookEntity> booksList = bookRepository.findAllByAuthorId(authorId);
+
+        return booksList.stream()
+                .map(bookDtoFactory::makeBookDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     public BookDto getBook(Long authorId, Long bookId) {
-        return null;
+        log.info("Attempt to get book by id {}", bookId);
+
+        BookEntity book = bookRepository.findByIdAndAuthorId(authorId, bookId).orElseThrow(
+                () -> new AppException("Book doesn't exists", HttpStatus.NOT_FOUND)
+        );
+
+        return bookDtoFactory.makeBookDto(book);
     }
 
     private AuthorEntity isAuthorExistsById(Long authorId) {
