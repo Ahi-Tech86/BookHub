@@ -67,11 +67,39 @@ services:
     networks:
       - backend
 
+  mongodb:
+    image: mongo:6
+    restart: always
+    container_name: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASS}
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db/
+    networks:
+      - backend
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    container_name: mongo_ui
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_USER}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_PASS}
+      ME_CONFIG_MONGODB_URL: mongodb://root:password@mongo:27017/
+    ports:
+      - "9999:8081"
+    networks:
+      - backend
+
 volumes:
   auth_db_data:
   redis_data:
   library_db_data:
   rabbitmq_data:
+  mongodb_data:
 
 networks:
   backend:

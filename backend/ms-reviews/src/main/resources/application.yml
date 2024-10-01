@@ -1,0 +1,20 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: REVIEWS-SERVICE
+
+  data:
+    mongodb:
+      uri: mongodb://${MANGODB_USER}:${MANGODB_PASS}@localhost:27017/reviews
+
+application:
+  security:
+    jwt:
+      access-token:
+        secret-key: ${JWT_ACCESS_SECRET_KEY}
+        expiration: 86400000 # 1 day
+      refresh-token:
+        secret-key: ${JWT_REFRESH_SECRET_KEY}
+        expiration: 604800000 # 7 days

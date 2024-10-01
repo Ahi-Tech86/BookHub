@@ -18,6 +18,11 @@ spring:
           predicates:
             - Path=/library/**
 
+        - id: reviews-service
+          uri: lb://REVIEWS-SERVICE
+          predicates:
+            - Path=/reviews/**
+
 eureka:
   instance:
     hostname: localhost

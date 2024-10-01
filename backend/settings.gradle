@@ -5,4 +5,5 @@ include 'ms-gateway'
 include 'lib'
 include 'ms-auth'
 include 'ms-library'
+include 'ms-reviews'
 
